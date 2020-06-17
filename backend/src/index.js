@@ -1,4 +1,5 @@
 const express = require('express');
+const { uuid } = require('uuidv4');
 
 const app = express();
 
@@ -25,75 +26,88 @@ app.use(express.json());
  */
 
 
-const arr = [
-    'Projeto 1',
-    'Projeto 2'
-];
+const projects = [];
 
-
-// Common GET 
-// app.get('/projects', (request, response) => {
-//     return response.json(arr);
-// });
 
 
 // //GET with Query params
+// app.get('/projects', (request, response) => {
+
+//     const { title } = request.query;
+
+//     return arr.find(item => item == title) 
+//             ? response.json(arr) 
+//             : response.status(404).json({message: "Not Found Element"});
+
+// });
+
+
+// //GET with Route params
+// app.get('/projects/:title', (request, response) => {
+
+//     const { title } = request.params;
+
+//     return arr.find(item => item == title) 
+//             ? response.json(arr) 
+//             : response.status(404).json({message: "Not Found Element"});
+
+// });
+
+
+// Common GET 
 app.get('/projects', (request, response) => {
-
-    const { title } = request.query;
-
-    return arr.find(item => item == title) 
-            ? response.json(arr) 
-            : response.status(404).json({message: "Not Found Element"});
-
-});
-
-
-//GET with Route params
-app.get('/projects/:title', (request, response) => {
-
-    const { title } = request.params;
-
-    return arr.find(item => item == title) 
-            ? response.json(arr) 
-            : response.status(404).json({message: "Not Found Element"});
-
+    return response.json(projects);
 });
 
 
 app.post('/projects', (request, response) => {
 
-    const { title } = request.body;
+    const { title, owner } = request.body;
 
-    arr.push(title);
+    const project = { id: uuid(), title, owner }; 
 
-    return response.json(arr);
+    projects.push(project);
+
+    return response.json(project);
 });
 
-app.put('/projects/:title', (request, response) => {
+app.put('/projects/:id', (request, response) => {
 
-    const { title } = request.params;        
-    const { content } = request.body;
+    const { id } = request.params;
+    const { title, owner } = request.body;
 
-    if(~arr.indexOf(title)){
-        arr[arr.indexOf(title)] = content;   
-        return response.json(arr);
-    }else{
-        return response.status(404).json({message: "Not Found Element"});
+    const projectIndex = projects.findIndex(project => project.id == id);
+
+    if(projectIndex < 0){
+        return response.status(404).json({message: "Project Not Found"});
     }
+        
+    const project = {
+        id,
+        title,
+        owner
+    };
+
+    projects[projectIndex] = project;
+    
+    return response.status(200).json(project);
+
 });
 
 
-app.delete('/projects/:title', (request, response) => {
+app.delete('/projects/:id', (request, response) => {
 
-    const { title } = request.params;
+    const { id } = request.params;
 
-    if(~arr.indexOf(title)){
-        delete arr[arr.indexOf(title)];
-        return response.json(arr);
-    }else{
-        return response.status(404).json({message: "Not Found Element"});
+    const projectIndex = projects.findIndex(project => project.id == id);
+
+    if(projectIndex < 0){
+        return response.status(404).json({message: "Project Not Found"});
     }
+
+    projects.splice(projectIndex, 1);
+
+    return response.status(204).send();
 
 });
 
