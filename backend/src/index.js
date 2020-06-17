@@ -3,6 +3,16 @@ const { response } = require('express');
 
 const app = express();
 
+
+/**
+ * HTTP Methods
+ * 
+ * GET: show all
+ * POST: create
+ * PUT/PATCH: update all or especific element
+ * DELETE: destroy especific element
+ */
+
 app.get('/projects', (request, response) => {
     return response.json([
         'Projeto 1',
