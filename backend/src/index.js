@@ -30,18 +30,6 @@ const projects = [];
 
 
 
-// //GET with Query params
-// app.get('/projects', (request, response) => {
-
-//     const { title } = request.query;
-
-//     return arr.find(item => item == title) 
-//             ? response.json(arr) 
-//             : response.status(404).json({message: "Not Found Element"});
-
-// });
-
-
 // //GET with Route params
 // app.get('/projects/:title', (request, response) => {
 
@@ -55,10 +43,23 @@ const projects = [];
 
 
 // Common GET 
-app.get('/projects', (request, response) => {
-    return response.json(projects);
-});
+// app.get('/projects', (request, response) => {
+//     return response.json(projects);
+// });
 
+
+// //GET with Query params
+app.get('/projects', (request, response) => {
+
+    const { title } = request.query;
+
+    const results = title 
+                    ? projects.find(project => project.title.includes(title)) 
+                    : projects;
+
+    return response.json(results);
+
+});
 
 app.post('/projects', (request, response) => {
 
@@ -68,7 +69,7 @@ app.post('/projects', (request, response) => {
 
     projects.push(project);
 
-    return response.json(project);
+    return response.status(200).json(project);
 });
 
 app.put('/projects/:id', (request, response) => {
@@ -79,7 +80,7 @@ app.put('/projects/:id', (request, response) => {
     const projectIndex = projects.findIndex(project => project.id == id);
 
     if(projectIndex < 0){
-        return response.status(404).json({message: "Project Not Found"});
+        return response.status(400).json({message: "Project Not Found"});
     }
         
     const project = {
