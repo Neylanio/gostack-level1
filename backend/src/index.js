@@ -1,5 +1,5 @@
 const express = require('express');
-const { uuid } = require('uuidv4');
+const { uuid, isUuid } = require('uuidv4');
 
 const app = express();
 
@@ -26,9 +26,11 @@ app.use(express.json());
  */
 
 
+ /**
+  * Middleware: Requisition interceptor, it can completly stop request or change the request data
+  */
+
 const projects = [];
-
-
 
 // //GET with Route params
 // app.get('/projects/:title', (request, response) => {
@@ -46,6 +48,30 @@ const projects = [];
 // app.get('/projects', (request, response) => {
 //     return response.json(projects);
 // });
+
+function logResquests(request, response, next){
+    const { method, url } = request;
+
+    const logLabel = `[${method.toUpperCase()}] - ${url}`;
+
+    return next();
+}
+
+function validateProjectId (request, response, next){
+
+    const { id } = request.params;
+
+    if(!isUuid(id)){
+        return response.status(400).json({ error: "Invalid project ID" })
+    }
+    
+    return next();
+
+}
+
+app.use(logResquests);
+
+app.use("/projects/:id", validateProjectId);
 
 
 // //GET with Query params
@@ -94,7 +120,6 @@ app.put('/projects/:id', (request, response) => {
     return response.status(200).json(project);
 
 });
-
 
 app.delete('/projects/:id', (request, response) => {
 
