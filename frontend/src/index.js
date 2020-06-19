@@ -2,4 +2,4 @@ const soma = (a,b) => {
     return a + b;
 }
 
-console.log(soma(1,5));
+console.log(soma(3,5));
