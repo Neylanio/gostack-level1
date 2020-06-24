@@ -3,7 +3,7 @@ const cors = require('cors');
 const { uuid, isUuid } = require('uuidv4');
 
 const app = express();
-//Vai permitir que qualquer front-end tenha acesso ao nosso backend
+//Allow anyelse front-end can acess
 app.use(cors());
 app.use(express.json());
 
@@ -32,23 +32,23 @@ app.use(express.json());
   * Middleware: Requisition interceptor, it can completly stop request or change the request data
   */
 
-const projects = [];
+const repositories = [];
 
 // //GET with Route params
-// app.get('/projects/:title', (request, response) => {
+// app.get('/repositories/:title', (request, response) => {
 
 //     const { title } = request.params;
 
-//     return arr.find(item => item == title) 
-//             ? response.json(arr) 
+//     return repositories.find(item => item == title) 
+//             ? response.json(repositories) 
 //             : response.status(404).json({message: "Not Found Element"});
 
 // });
 
 
 // Common GET 
-// app.get('/projects', (request, response) => {
-//     return response.json(projects);
+// app.get('/repositories', (request, response) => {
+//     return response.json(repositories);
 // });
 
 function logResquests(request, response, next){
@@ -59,12 +59,12 @@ function logResquests(request, response, next){
     return next();
 }
 
-function validateProjectId (request, response, next){
+function validateRepositoryId (request, response, next){
 
     const { id } = request.params;
 
     if(!isUuid(id)){
-        return response.status(400).json({ error: "Invalid project ID" })
+        return response.status(400).json({ error: "Invalid repository ID" })
     }
     
     return next();
@@ -73,67 +73,67 @@ function validateProjectId (request, response, next){
 
 app.use(logResquests);
 
-app.use("/projects/:id", validateProjectId);
+app.use("/repositories/:id", validateRepositoryId);
 
 
 // //GET with Query params
-app.get('/projects', (request, response) => {
+app.get('/repositories', (request, response) => {
 
     const { title } = request.query;
 
     const results = title 
-                    ? projects.find(project => project.title.includes(title)) 
-                    : projects;
+                    ? repositories.find(respository => respository.title.includes(title)) 
+                    : repositories;
 
     return response.json(results);
 
 });
 
-app.post('/projects', (request, response) => {
+app.post('/repositories', (request, response) => {
 
     const { title, owner } = request.body;
 
-    const project = { id: uuid(), title, owner }; 
+    const respository = { id: uuid(), title, owner }; 
 
-    projects.push(project);
+    repositories.push(respository);
 
-    return response.status(200).json(project);
+    return response.status(200).json(respository);
 });
 
-app.put('/projects/:id', (request, response) => {
+app.put('/repositories/:id', (request, response) => {
 
     const { id } = request.params;
     const { title, owner } = request.body;
 
-    const projectIndex = projects.findIndex(project => project.id == id);
+    const respositoryIndex = repositories.findIndex(respository => respository.id == id);
 
-    if(projectIndex < 0){
-        return response.status(400).json({message: "Project Not Found"});
+    if(respositoryIndex < 0){
+        return response.status(400).json({message: "Respository Not Found"});
     }
         
-    const project = {
+    const repository = {
         id,
         title,
         owner
     };
 
-    projects[projectIndex] = project;
+    repositories[respositoryIndex] = repository;
     
-    return response.status(200).json(project);
+    return response.status(200).json(respository);
 
 });
 
-app.delete('/projects/:id', (request, response) => {
+app.delete('/repositories/:id', (request, response) => {
 
     const { id } = request.params;
 
-    const projectIndex = projects.findIndex(project => project.id == id);
+    const respositoryIndex = repositories.findIndex(repository => repository.id == id);
 
-    if(projectIndex < 0){
-        return response.status(404).json({message: "Project Not Found"});
+    if(respositoryIndex < 0){
+        return response.status(404).json({message: "Respository Not Found"});
     }
 
-    projects.splice(projectIndex, 1);
+    repositories.splice(respositoryIndex, 1);
 
     return response.status(204).send();
 
