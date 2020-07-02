@@ -1,0 +1,7 @@
+Using TScript
+
+# yarn init -y
+# yarn add typescript -D
+# yarn tsc --init
+// Change 'userDir' from tsconfig.json to ./dist
+# yarn tsc
